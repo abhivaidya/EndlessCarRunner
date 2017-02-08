@@ -1,3 +1,5 @@
+var stats;
+
 var scene,
     camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH,
     renderer, container;
@@ -346,9 +348,24 @@ function init()
 
     loop();
 
+    stats = createStats();
+    document.body.appendChild( stats.domElement );
+
     document.addEventListener('mousemove', handleMouseMove, false);
     //document.addEventListener('keyup', handleKeyUp, false);
 }
+
+function createStats()
+{
+    var tempStats = new Stats();
+    tempStats.setMode(0);
+
+    tempStats.domElement.style.position = 'absolute';
+    tempStats.domElement.style.left = '0';
+    tempStats.domElement.style.top = '0';
+
+    return tempStats;
+};
 
 function handleKeyUp( event )
 {
@@ -525,6 +542,9 @@ function loop()
     //car.mesh.position.x = lanes[currentLane];
 
     car.pilot.updateHairs();
+
+    if(stats)
+        stats.update();
 
     renderer.render(scene, camera);
 
