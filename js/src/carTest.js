@@ -35,7 +35,7 @@ var Colors = {
 
 var Ground = function()
 {
-    var groundGeom = new THREE.PlaneGeometry(1200, 1200, 1, 1);
+    var groundGeom = new THREE.PlaneGeometry(WIDTH, WIDTH, 1, 1);
     var groundMat = new THREE.MeshPhongMaterial({color:Colors.ground, shading:THREE.FlatShading});
 
     this.mesh = new THREE.Mesh(groundGeom, groundMat);
@@ -480,8 +480,8 @@ function createTrees()
 {
     for(var i = 0; i < 20; i++)
     {
-        var max = 250;
-        var min = -250;
+        var max = WIDTH / 4;
+        var min = -WIDTH / 4;
 
         var tree = new Tree();
         scene.add(tree.mesh);
@@ -506,8 +506,8 @@ function createSky()
 {
     for(var i = 0; i < 10; i++)
     {
-        var max = 400;
-        var min = -400;
+        var max = WIDTH / 2;
+        var min = -WIDTH / 2;
 
         var cloud = new Cloud();
         scene.add(cloud.mesh);
