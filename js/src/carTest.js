@@ -12,6 +12,8 @@ var trees = [];
 
 var clouds = [];
 
+var birds = [];
+
 var speed = 1;
 
 var carLevel = 0;
@@ -330,6 +332,35 @@ Cloud.prototype.rotate = function()
     }
 }
 
+var Bird = function()
+{
+    this.mesh = new THREE.Object3D();
+    this.mesh.name = "bird";
+
+    var wingGeom = new THREE.BoxGeometry(5, 30, 20);
+    var wingMat = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
+    var wing = new THREE.Mesh(wingGeom, wingMat);
+    wingGeom.applyMatrix(new THREE.Matrix4().makeTranslation(0, 15, 10));
+
+    var wingL = wing.clone();
+    this.mesh.add(wingL);
+    wingL.rotation.z = -Math.PI / 4;
+
+    var wingR = wing.clone();
+    this.mesh.add(wingR);
+    wingR.rotation.z = Math.PI / 4;
+
+    this.wingAngle = 0;
+}
+
+Bird.prototype.flapWings = function ()
+{
+    this.wingAngle += 0.1;
+
+    this.mesh.children[0].rotation.z = -Math.PI / 4 + Math.cos(this.wingAngle) * Math.PI / 8;
+    this.mesh.children[1].rotation.z = Math.PI / 4 - Math.cos(this.wingAngle) * Math.PI / 8;
+}
+
 window.addEventListener('load', init, false);
 
 function init()
@@ -343,6 +374,8 @@ function init()
     createGround();
 
     createTrees();
+
+    createBirds();
 
     createSky();
 
@@ -519,6 +552,27 @@ function createSky()
     }
 }
 
+function createBirds()
+{
+    for (var i = 0; i < 10; i++)
+    {
+        var max = WIDTH / 4;
+        var min = -WIDTH / 4;
+
+        var bird = new Bird();
+        scene.add(bird.mesh);
+        bird.mesh.position.x = Math.floor(Math.random() * (max - min + 1)) + min;
+        bird.mesh.position.y = 300;
+        bird.mesh.position.z = Math.floor(Math.random() * -700);
+        bird.moveRightLeft = Math.round(Math.random());
+
+        bird.mesh.rotation.y = Math.PI / 2;
+        bird.mesh.scale.set(0.3, 0.3, 0.3);
+
+        birds.push(bird);
+    }
+}
+
 function loop()
 {
     trees.forEach(function (tree) {
@@ -533,6 +587,25 @@ function loop()
 
         if(cloud.mesh.position.z > 400)
             cloud.mesh.position.z = -700;
+    });
+
+    birds.forEach(function (bird) {
+        bird.flapWings();
+
+        if(bird.moveRightLeft)
+            bird.mesh.position.x += speed / 2;
+        else
+            bird.mesh.position.x -= speed / 2;
+
+        bird.mesh.position.z += speed;
+
+        if(bird.mesh.position.x > 600)
+            bird.moveRightLeft = 0;
+        else if(bird.mesh.position.x < -600)
+            bird.moveRightLeft = 1;
+
+        if(bird.mesh.position.z > 200)
+            bird.mesh.position.z = -700;
     });
 
     carLevel += 0.16;
